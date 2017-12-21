@@ -310,7 +310,8 @@ function(R, opts)
         AddSet(G_k, t);
       od;
 
-      if Size(x) < Size(G) then  # Otherwise there are no results
+      if Size(x) < Size(G) then # Otherwise there are no results
+        gens := IO_gettimeofday();
         for H in MaximalSubgroupClassReps(G) do
           trans := RightTransversal(G, Normalizer(G, H));
           for t in trans do
@@ -320,6 +321,8 @@ function(R, opts)
             fi;
           od;
         od;
+        SEMIGROUPS.maximal.subgroups := SEMIGROUPS.maximal.subgroups +
+                                        SEMIGROUPS.elapsed(gens);
       fi;
     fi;
     if Length(subgroups) > 0 then
@@ -376,7 +379,7 @@ function(R, opts)
   H1, l2, i2, H2, rows_in, rows_out, cols_in, cols_out, failed, iso, inv, R_n,
   iso_p, inv_p, ccs, comp_row, comp_col, comp, con, sup, m, lim, P, max, q,
   same_coset, results, V, normal, trans, len, T, success, visited, conjugator,
-  queue, u, candidate, idems, recursion, genset, k, j, t, v, choice, gen;
+  queue, u, candidate, idems, recursion, genset, k, j, t, v, choice, gen, start;
 
   if not IsFinite(R)
       or not IsReesZeroMatrixSemigroup(R)
@@ -438,6 +441,7 @@ function(R, opts)
   tot := 0;
 
   # Type 1: The maximal subsemigroup {0}.
+  start := IO_gettimeofday();
 
   # {0} is a maximal subsemigroup if and only if R is the 2-element semilattice
   if type[1] then
@@ -457,12 +461,15 @@ function(R, opts)
         fi;
       fi;
       Info(InfoSemigroups, 2, "...found one result.");
+      SEMIGROUPS.maximal.nrtype1 := 1;
     else
       Info(InfoSemigroups, 2, "...found none.");
     fi;
   fi;
 
   # Type 2: The maximal subsemigroup R \ {0}.
+  SEMIGROUPS.maximal.type1 := SEMIGROUPS.elapsed(start);
+  start := IO_gettimeofday();
 
   # R \ {0} is a maximal subsemigroup...
   #         if and only if <mat> contains no 0 entry
@@ -484,6 +491,7 @@ function(R, opts)
         Add(out, x);
       fi;
       Info(InfoSemigroups, 2, "...found one result.");
+      SEMIGROUPS.maximal.nrtype2 := 1;
     else
       Info(InfoSemigroups, 2, "...found none.");
     fi;
@@ -496,6 +504,8 @@ function(R, opts)
   fi;
 
   # Type 3: Maximal subsemigroups I x G x L' + {0} where L' = L \ {l} for some l
+  SEMIGROUPS.maximal.type2 := SEMIGROUPS.elapsed(start);
+  start := IO_gettimeofday();
 
   # In the Graham-Houghton bipartite graph, we can remove any vertex <l> in <L>
   # which is not adjacent to a vertex <i> in <I> which is only adjacent to <l>.
@@ -532,6 +542,7 @@ function(R, opts)
 
     if L > 1 and n > 0 then
       Info(InfoSemigroups, 2, "...found ", n, " result(s).");
+      SEMIGROUPS.maximal.nrtype3 := n;
       tot := tot + n;
       if not opts.number then
         Info(InfoSemigroups, 2, "creating these maximal subsemigroups.");
@@ -576,6 +587,8 @@ function(R, opts)
   fi;
 
   # Type 4: Maximal subsemigroups I' x G x L + {0} where I' = I \ {i} for some i
+  SEMIGROUPS.maximal.type3 := SEMIGROUPS.elapsed(start);
+  start := IO_gettimeofday();
 
   # In the Graham-Houghton bipartite graph, we can remove any vertex <i> in <I>
   # which is not adjacent to a vertex <l> in <L> which is only adjacent to <i>.
@@ -611,6 +624,7 @@ function(R, opts)
 
     if I > 1 and n > 0 then
       Info(InfoSemigroups, 2, "...found ", n, " result(s).");
+      SEMIGROUPS.maximal.nrtype4 := n;
       tot := tot + n;
       if not opts.number then
         Info(InfoSemigroups, 2, "creating these maximal subsemigroups.");
@@ -655,6 +669,8 @@ function(R, opts)
   fi;
 
   # Type 5: Maximal subsemigroups arising from maximal rectangles of zeroes
+  SEMIGROUPS.maximal.type4 := SEMIGROUPS.elapsed(start);
+  start := IO_gettimeofday();
   if type[5] then
     Info(InfoSemigroups, 2, "Type 5: looking for maximal subsemigroups ",
                             "arising from maximal rectangles...");
@@ -676,7 +692,10 @@ function(R, opts)
         and not IsCompleteBipartiteDigraph(dig_contain) then
       Info(InfoSemigroups, 2, "...calculating maximal independent sets of the ",
                               "Graham-Houghton graph...");
+      n := IO_gettimeofday();
       rectangles := DigraphMaximalIndependentSets(dig);
+      SEMIGROUPS.maximal.cliques := SEMIGROUPS.maximal.cliques +
+                                    SEMIGROUPS.elapsed(n);
       n := Length(rectangles) - 2;
       Info(InfoSemigroups, 2, "...found ", n, " maximal independent set(s).");
       if n > 0 then
@@ -707,6 +726,7 @@ function(R, opts)
 
     if count > 0 then
       Info(InfoSemigroups, 2, "...found ", count, " result(s).");
+      SEMIGROUPS.maximal.nrtype5 := count;
       tot := tot + count;
       if not opts.number then
         Info(InfoSemigroups, 2, "...creating these maximal subsemigroups.");
@@ -810,6 +830,8 @@ function(R, opts)
   fi;
 
   # Type 6: Maximal subsemigps isomorphic to I x H x L + {0}, H < G maximal
+  SEMIGROUPS.maximal.type5 := SEMIGROUPS.elapsed(start);
+  start := IO_gettimeofday();
   if type[6] then
     Info(InfoSemigroups, 2, "Type 6: looking for maximal subsemigroups ",
                             "arising from maximal subgroups...");
@@ -913,7 +935,10 @@ function(R, opts)
     fi;
 
     if not failed then
+      q := IO_gettimeofday();
       max := MaximalSubgroupClassReps(G);
+      SEMIGROUPS.maximal.subgroups := SEMIGROUPS.maximal.subgroups +
+                                      SEMIGROUPS.elapsed(q);
       q := Length(max);
       Info(InfoSemigroups, 2, "...there are ", q, " maximal subgroup(s) of ",
                               "the underlying group, up to conjugacy.");
@@ -1039,6 +1064,7 @@ function(R, opts)
       Info(InfoSemigroups, 2, "...found none.");
     else
       Info(InfoSemigroups, 2, "...found ", count, " result(s).");
+      SEMIGROUPS.maximal.nrtype6 := count;
       tot := tot + count;
     fi;
 
@@ -1109,6 +1135,7 @@ function(R, opts)
       od;
     fi;
   fi;
+  SEMIGROUPS.maximal.type6 := SEMIGROUPS.elapsed(start);
 
   if opts.number then
     return tot;
@@ -1154,6 +1181,7 @@ function(S, opts)
 
   if not IsTrivial(S) then
     Info(InfoSemigroups, 1, "enumerating the D-classes...");
+
     gen := GeneratorsOfSemigroup(S);
     D := GreensDClasses(S);
     # <gen[i]> is in the D-class index by <class_gen[i]>
@@ -1487,6 +1515,9 @@ function(S, opts)
     SetDigraphNrEdges(delta_prime, nredges * 2);
     SetDigraphBicomponents(delta_prime, [[1 .. m], [m + 1 .. m + n]]);
 
+    SEMIGROUPS.maximal.constructing := SEMIGROUPS.maximal.constructing +
+                                       SEMIGROUPS.elapsed(num);
+
     ############################################################################
     # Find maximal subsemigroups from maximal rectangles
     num := 0;
@@ -1495,7 +1526,10 @@ function(S, opts)
     if m * n > 1 and not IsCompleteBipartiteDigraph(delta) and
         not IsCompleteBipartiteDigraph(delta_prime) then
       Info(InfoSemigroups, 1, "...calculating maximal independent sets...");
+      num := IO_gettimeofday();
       rectangles := DigraphMaximalIndependentSets(delta);
+      SEMIGROUPS.maximal.cliques := SEMIGROUPS.maximal.cliques +
+                                    SEMIGROUPS.elapsed(num);
       num := Length(rectangles) - 2;
       Info(InfoSemigroups, 1, "...found ", num, " maximal independent set(s).");
       if num > 0 then
