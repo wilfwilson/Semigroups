@@ -11,13 +11,14 @@
 # This file contains declarations for matrices over semirings.
 
 DeclareCategory("IsMatrixOverSemiring",
-                IsMultiplicativeElementWithInverse);
+                IsMultiplicativeElementWithInverse and IsMatrixObj);
 
 DeclareCategoryCollections("IsMatrixOverSemiring");
 DeclareCategoryCollections("IsMatrixOverSemiringCollection");
 
 DeclareRepresentation("IsPlistMatrixOverSemiringPositionalRep",
-                      IsMatrixOverSemiring and IsPositionalObjectRep, 1);
+                      IsMatrixOverSemiring and IsRowListMatrix
+                                           and IsPositionalObjectRep, 1);
 
 DeclareOperation("OneMutable", [IsMatrixOverSemiringCollection]);
 DeclareAttribute("OneImmutable", IsMatrixOverSemiringCollection);
@@ -38,10 +39,6 @@ DeclareOperation("MatrixNC", [IsMatrixOverSemiring,
 DeclareOperation("Matrix", [IsOperation, IsHomogeneousList]);
 DeclareOperation("Matrix", [IsOperation, IsHomogeneousList, IsPosInt]);
 DeclareOperation("Matrix", [IsOperation, IsHomogeneousList, IsInt, IsInt]);
-if not CompareVersionNumbers(GAPInfo.BuildVersion, "4.10") then
-  DeclareOperation("Matrix", [IsSemiring, IsHomogeneousList]);
-fi;
-DeclareOperation("Matrix", [IsSemiring, IsMatrixOverSemiring]);
 
 DeclareConstructor("AsMatrix", [IsMatrixOverSemiring,
                                 IsMatrixOverSemiring]);
@@ -99,13 +96,10 @@ DeclareOperation("RandomMatrixOp", [IsField and IsFinite, IsPosInt, IsPosInt]);
 
 DeclareAttribute("AsList", IsMatrixOverSemiring);
 DeclareOperation("AsMutableList", [IsMatrixOverSemiring]);
-DeclareOperation("ELM_LIST", [IsMatrixOverSemiring, IsPosInt]);
-DeclareOperation("IsBound[]", [IsMatrixOverSemiring, IsPosInt]);
 DeclareOperation("Iterator", [IsMatrixOverSemiring]);
 DeclareAttribute("DimensionOfMatrixOverSemiring", IsMatrixOverSemiring);
 DeclareAttribute("DimensionOfMatrixOverSemiringCollection",
                  IsMatrixOverSemiringCollection);
-DeclareAttribute("TransposedMatImmutable", IsMatrixOverSemiring);
 DeclareProperty("IsTorsion", IsMatrixOverSemiring);
 
 # Cannot use TypeObj since it can contain information about

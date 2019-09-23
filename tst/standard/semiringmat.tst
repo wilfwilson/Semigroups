@@ -438,7 +438,7 @@ gap> mat := Matrix(IsIntegerMatrix, [[0, 1, 0], [1, 2, 1], [1, 0, 1]]);;
 gap> mat[1];
 [ 0, 1, 0 ]
 gap> mat[4];
-Error, Semigroups: ELM_LIST (for a matrix over semiring):
+Error, Semigroups: [] (for a matrix over semiring):
 the position is greater than the dimension of the matrix,
 
 # semiringmat, pickling
@@ -608,11 +608,7 @@ gap> Matrix(IsTropicalMaxPlusMatrix, [[2, 2], [0, 1]], 10) <
 false
 
 # Test Matrix for a finite field and list consisting of an empty list
-gap> if CompareVersionNumbers(GAPInfo.BuildVersion, "4.10") then
->   View(Matrix(GF(3), [[]])); Print("\n");
-> else
->   Print("[ [  ] ]\n");
-> fi;
+gap> Matrix(GF(3), [[]]);
 [ [  ] ]
 
 # SEMIGROUPS_UnbindVariables
