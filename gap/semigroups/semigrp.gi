@@ -1268,3 +1268,16 @@ function(S, T)
   fi;
   return IsDoneIterator(SS);
 end);
+
+################################################################################
+InstallMethod(Intersection2, "for two semigroups in the same family",
+IsIdenticalObj,
+[IsSemigroup, IsSemigroup],
+function(S, T)
+  if IsSubsemigroup(S, T) then
+    return T;
+  elif IsSubsemigroup(T, S) then
+    return S;
+  fi;
+  TryNextMethod();
+end);
