@@ -37,7 +37,7 @@ jobs:
             gap-branch: stable-4.12
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: "Install dependencies (macOS only!)"
         if: ${{ runner.os == 'macOS' }}
         run: brew install automake autoconf zlib gmp pkg-config libtool
