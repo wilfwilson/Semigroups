@@ -19,14 +19,16 @@ jobs:
           update_packager_index: false
           override_cache_key: ${{ runner.os }}-$GAPBRANCH-$ABI-${{ github.ref }}
           override_cache_key_fallback: ${{ runner.os }}-$GAPBRANCH-$ABI
-      - name: "Install GAP and clone/compile necessary packages"
-        uses: gap-actions/setup-gap@v2
+      - name: "Install GAP"
+        uses: gap-actions/setup-gap@v3
         env:
           # We don't understand why this is necessary. Hopefully it can be
           # removed in the fullness of time.
           LDFLAGS: "-pthread"
-        with:
-          GAP_PKGS_TO_BUILD: "digraphs io orb datastructures profiling"
+      - name: "Build necessary GAP packages"
+        run: |
+          cd ${GAPROOT}/pkg
+          ../bin/BuildPackages.sh --strict digraphs io orb datastructures profiling
       - name: "Build Semigroups"
         uses: gap-actions/build-pkg@v1
         with:
@@ -39,15 +41,14 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         # Don't use ccache, since sometimes this fails when using -mavx
-      - name: "Install GAP and clone/compile necessary packages"
-        uses: gap-actions/setup-gap@v2
-        with:
-          GAP_PKGS_TO_BUILD: "digraphs io orb datastructures profiling"
-          ABI: 64
+      - name: "Install GAP"
+        uses: gap-actions/setup-gap@v3
+      - name: "Build necessary GAP packages"
+        run: |
+          cd ${GAPROOT}/pkg
+          ../bin/BuildPackages.sh --strict digraphs io orb datastructures profiling
       - name: "Build Semigroups"
         uses: gap-actions/build-pkg@v1
-        with:
-          ABI: 64
       - name: "Run Semigroups package's tst/teststandard.g"
         uses: gap-actions/run-pkg-tests@v2
       - uses: gap-actions/process-coverage@v2
@@ -83,14 +84,16 @@ jobs:
           override_cache_key: ${{ runner.os }}-$GAPBRANCH-$ABI-${{ github.ref }}
           override_cache_key_fallback: ${{ runner.os }}-$GAPBRANCH-$ABI
       - run: mkdir libsemigroups
-      - name: "Install GAP and clone/compile necessary packages"
-        uses: gap-actions/setup-gap@v2
+      - name: "Install GAP"
+        uses: gap-actions/setup-gap@v3
         env:
           # We don't understand why this is necessary. Hopefully it can be
           # removed in the fullness of time.
           LDFLAGS: "-pthread"
-        with:
-          GAP_PKGS_TO_BUILD: "digraphs io orb datastructures profiling"
+      - name: "Build necessary GAP packages"
+        run: |
+          cd ${GAPROOT}/pkg
+          ../bin/BuildPackages.sh --strict digraphs io orb datastructures profiling
       - name: "Build Semigroups"
         uses: gap-actions/build-pkg@v1
         with: # we use --with-external-fmt since this is available from conda
