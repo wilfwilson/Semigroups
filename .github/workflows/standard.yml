@@ -1,4 +1,4 @@
-name: "Standard tests"
+name: "Standard CI tests"
 on:
   workflow_dispatch:
   pull_request:
@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  standard:
     name: "${{ matrix.gap-branch }} / ${{ matrix.os }} / ${{ matrix.ABI }}-bit"
     runs-on: "${{ matrix.os }}-latest"
     strategy:
@@ -25,20 +25,32 @@ jobs:
           - macos
         gap-branch:
           - master
-          - stable-4.12
-          - stable-4.13
-          - stable-4.14
+          - stable-4.15
+          - v4.14
+          - v4.13
+          - v4.12
         ABI:
           - 64
+        configflags:
+          - "--disable-hpcombi"
+
+        include:
+          - os: windows
+            gap-branch: latest
+            configflags: "--disable-fmt --disable-hpcombi" # to try and speed up compilation FIXME don't disable hpcombi
+            ABI: 64
+
         exclude:
           # We exclude this combination for the reasons discussed at:
           # https://github.com/semigroups/Semigroups/pull/1015
           # https://github.com/gap-system/gap/issues/5640
           - os: macos
-            gap-branch: stable-4.12
+            gap-branch: v4.12
 
     steps:
       - uses: actions/checkout@v5
+      - uses: gap-actions/setup-cygwin@v2
+        if: ${{ runner.os == 'Windows' }}
       - name: "Install dependencies (macOS only!)"
         if: ${{ runner.os == 'macOS' }}
         run: brew install automake autoconf zlib gmp pkg-config libtool
@@ -51,22 +63,33 @@ jobs:
           update_packager_index: false
           override_cache_key: ${{ runner.os }}-${{ matrix.gap-branch }}-${{ matrix.ABI }}-${{ github.ref }}
           override_cache_key_fallback: ${{ runner.os }}-${{ matrix.gap-branch }}-${{ matrix.ABI }}
-      - name: "Install GAP and clone/compile necessary packages"
-        uses: gap-actions/setup-gap@v2
+      - name: "Install GAP"
+        uses: gap-actions/setup-gap@v3
         env:
           # We don't understand why this is necessary. Hopefully it can be
           # removed in the fullness of time.
           LDFLAGS: "-pthread"
-        with:
-          GAP_PKGS_TO_CLONE: digraphs/digraphs
-          GAP_PKGS_TO_BUILD: "digraphs io orb datastructures profiling"
-          GAPBRANCH: ${{ matrix.gap-branch }}
           ABI: ${{ matrix.ABI }}
+        with:
+          gap-version: ${{ matrix.gap-branch }}
+      - name: "Install necessary GAP package clones"
+        shell: bash
+        run: |
+          for PKG in https://github.com/digraphs/Digraphs.git; do
+            cd ${GAPROOT}/pkg
+            git clone $PKG
+          done
+      - name: "Build necessary GAP packages"
+        shell: bash
+        env:
+          ABI: ${{ matrix.ABI }}
+        run: |
+          cd ${GAPROOT}/pkg
+          ../bin/BuildPackages.sh --strict digraphs* io* orb* datastructures* profiling*
       - name: "Build Semigroups"
         uses: gap-actions/build-pkg@v1
         with:
-          ABI: ${{ matrix.ABI }}
-          CONFIGFLAGS: --disable-hpcombi
+          CONFIGFLAGS: ${{ matrix.configflags }}
       - name: "Run Semigroups package's tst/teststandard.g"
         uses: gap-actions/run-pkg-tests@v3
       - uses: gap-actions/process-coverage@v2
@@ -75,26 +98,3 @@ jobs:
         uses: gap-actions/run-pkg-tests@v3
         with:
           GAP_TESTFILE: "ci/run-gap-testinstall.g"
-
-  test-cygwin:
-     name: "master / cygwin / 64-bit"
-     runs-on: windows-latest
-     env:
-       CHERE_INVOKING: 1
-     steps:
-       - uses: actions/checkout@v5
-       - name: "Setup cygwin"
-         uses: gap-actions/setup-cygwin@v1
-       - name: "Setup GAP for cygwin"
-         uses: gap-actions/setup-gap@cygwin-v2
-         with:
-           GAP_PKGS_TO_BUILD: "digraphs io orb datastructures profiling"
-       - name: "Build Semigroups"
-         uses: gap-actions/build-pkg@cygwin-v1
-         with:
-           CONFIGFLAGS: --disable-fmt --disable-hpcombi # to try and speed up compilation FIXME don't disable hpcombi
-       - uses: gap-actions/run-pkg-tests@cygwin-v2
-         with:
-           GAP_TESTFILE: "tst/teststandard.g"
-       - uses: gap-actions/process-coverage@cygwin-v2
-       - uses: codecov/codecov-action@v5
