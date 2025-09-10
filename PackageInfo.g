@@ -34,15 +34,15 @@ _STANDREWSCS := Concatenation(["Jack Cole Building, North Haugh, ",
 SetPackageInfo(rec(
 PackageName := "Semigroups",
 Subtitle := "A package for semigroups and monoids",
-Version := "5.5.4",
-Date := "29/08/2025",  # dd/mm/yyyy format
+Version := "7.8.9",
+Date := "11/09/2025",  # dd/mm/yyyy format
 License := "GPL-3.0-or-later",
 
 ArchiveFormats := ".tar.gz",
 
 SourceRepository := rec(
     Type := "git",
-    URL := Concatenation("https://github.com/semigroups/", ~.PackageName),
+    URL := Concatenation("https://github.com/wilfwilson/", ~.PackageName),
 ),
 
 IssueTrackerURL := Concatenation(~.SourceRepository.URL, "/issues"),
