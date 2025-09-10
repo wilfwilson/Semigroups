@@ -3,6 +3,12 @@ Copyright © 2011-2025 [James D. Mitchell][] et al.
 
 Licensing information can be found in the `LICENSE` file.
 
+## Version 7.8.9 (released 11/09/2025)
+
+This is an incredibly amazing release that contains so much good stuff.
+
+I absolutely love it. I hope you do too.
+
 ## Version 5.5.4 (released 29/08/2025)
 
 This is a minor release that includes a technical change for compatibility with
