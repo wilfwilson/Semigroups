@@ -1,0 +1,57 @@
+name: Valgrind
+on:
+  workflow_dispatch:
+  release:
+    types: [created]
+  push:
+    paths:
+      - src/*.[hc]
+  pull_request:
+    paths:
+      - src/*.[hc]
+  push:
+    branches:
+      - rc-v*
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-valgrind:
+    name: "Ubuntu / GAP stable-4.15 / valgrind"
+    runs-on: ubuntu-latest
+    env:
+      NO_COVERAGE: true
+      VALGRIND: valgrind --trace-children=yes --leak-check=full --error-exitcode=1
+    steps:
+      - uses: actions/checkout@v5
+      - name: "Output g++ version . . ."
+        run: g++ --version
+      - name: "Install Valgrind . . ."
+        run: sudo apt-get install valgrind
+      - name: "Install GAP . . ."
+        uses: gap-actions/setup-gap@v3
+        with:
+          gap-version: stable-4.15
+          configflags: --enable-valgrind
+      - name: "Build additional necessary GAP packages . . ."
+        run: |
+          cd ${GAPROOT}/pkg
+          ../bin/BuildPackages.sh --strict digraphs* io* orb* datastructures* profiling*
+      - name: "Build Semigroups . . ."
+        uses: gap-actions/build-pkg@v1
+        with:
+          CONFIGFLAGS: --disable-hpcombi
+      - name: "Run SemigroupsTestInstall . . ."
+        uses: gap-actions/run-pkg-tests@v3
+        with:
+          testfile: tst/github_actions/install.g
+          pre-gap: ${{ env.VALGRIND }}
+          coverage: false
+      - name: "Run SemigroupsTestStandard . . ."
+        uses: gap-actions/run-pkg-tests@v3
+        with:
+          testfile: tst/github_actions/standard.g
+          pre-gap: ${{ env.VALGRIND }}
+          coverage: false
