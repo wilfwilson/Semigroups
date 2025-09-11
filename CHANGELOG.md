@@ -3,6 +3,12 @@ Copyright © 2011-2025 [James D. Mitchell][] et al.
 
 Licensing information can be found in the `LICENSE` file.
 
+## Version 7.8.11 (released 11/09/2025)
+
+Actually, this is the best release of the Semigroups package ever.
+
+It is truly a release of incredible quality and amazingness.
+
 ## Version 7.8.10 (released 11/09/2025)
 
 I think this might be the best release of the Semigroups package ever.
