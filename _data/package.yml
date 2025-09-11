@@ -1,5 +1,5 @@
 name: Semigroups
-version: "7.8.9"
+version: "7.8.10"
 license: "GPL-3.0-or-later"
 date: 2025-09-11
 description: |
@@ -111,7 +111,7 @@ packageinfo: https://semigroups.github.io/Semigroups/PackageInfo.g
 
 downloads:
     - name: .tar.gz
-      url: https://github.com/wilfwilson/Semigroups/releases/download/v7.8.9/semigroups-7.8.9.tar.gz
+      url: https://github.com/wilfwilson/Semigroups/releases/download/v7.8.10/semigroups-7.8.10.tar.gz
 
 abstract: |
     
@@ -148,7 +148,7 @@ citeas: |
     <p class='BibEntry'>
     [<span class='BibKey'>MABBCCEEEBFHHHJJNKKKPPRSSSSTTWWWYYZ25</span>]   <b class='BibAuthor'>Mitchell, J., Anagnostopoulou-Merkouri, M., Breuer, T., Burrell, S., Cirpons, R., Conti-Leslie, T., Edwards, J., Egri-Nagy, A., Elliott, L., Flores Brito, F., Froehlich, T., Ham, N., Hancock, R., Horn, M., Jefferson, C., Jonusas, J., Nagpal, C., Konovalov, O., Konstantinidi, A., Kwon, H., Pasechnik, D. V., Pfeiffer, M., Russell, C., Schmidt, J., Siccha, S., Smith, F., Spiers, B., Thiéry, N., Tsalakou, M., Wensley, C., Whyte, M., Wilson, W. A., Yang, T., Young, M. and Zickgraf, F.</b>,
      <i class='BibTitle'>Semigroups, A package for semigroups and monoids,
-             Version 7.8.9</i>
+             Version 7.8.10</i>
      (<span class='BibYear'>2025</span>)<br />
     (<span class='BibNote'>GAP package</span>),
     <span class='BibHowpublished'><a href="https://semigroups.github.io/Semigroups">https://semigroups.github.io/Semigroups</a></span>.
@@ -172,7 +172,7 @@ bibtex: |
                           Whyte, M. and Wilson, W. A. and Yang, T. and Young, M.
                           and Zickgraf, F.},
       title =            {{Semigroups},  {A package for semigroups and monoids},
-                          {V}ersion 7.8.9},
+                          {V}ersion 7.8.10},
       month =            {Sep},
       year =             {2025},
       note =             {GAP package},
